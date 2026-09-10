@@ -71,6 +71,32 @@ QPushButton#primary:disabled { background: #b8cbe8; border-color: #b8cbe8; color
 QListWidget, QTableWidget, QTreeWidget {
     border: 1px solid #e2e5ea; border-radius: 6px; background: #ffffff;
 }
+/* Item views need their own hover/selected colours: once any stylesheet rule
+   applies to a view (or to the QComboBox a popup belongs to), Qt stops using
+   the palette for those states and would paint the row white on white. */
+QAbstractItemView {
+    background: #ffffff; color: #22293a; outline: 0;
+    selection-background-color: #1d6fd6; selection-color: #ffffff;
+}
+QListView::item, QTreeView::item, QTableView::item { color: #22293a; }
+QListView::item:hover, QTreeView::item:hover, QTableView::item:hover {
+    background: #eef3fb; color: #22293a;
+}
+QListView::item:selected, QTreeView::item:selected, QTableView::item:selected {
+    background: #1d6fd6; color: #ffffff;
+}
+QComboBox::item { background: #ffffff; color: #22293a; }
+QComboBox::item:selected { background: #1d6fd6; color: #ffffff; }
+QMenu { background: #ffffff; color: #22293a; border: 1px solid #ccd2db; padding: 4px; }
+QMenu::item { padding: 5px 20px; }
+QMenu::item:selected { background: #1d6fd6; color: #ffffff; }
+QMenu::item:disabled { color: #9aa2ae; }
+QMenu::separator { height: 1px; background: #e2e5ea; margin: 4px 6px; }
+QMenuBar::item { padding: 5px 9px; }
+QMenuBar::item:selected { background: #eef3fb; }
+QToolTip {
+    background: #ffffff; color: #22293a; border: 1px solid #ccd2db; padding: 3px;
+}
 QHeaderView::section {
     background: #f0f2f5; border: none; border-right: 1px solid #e2e5ea;
     border-bottom: 1px solid #e2e5ea; padding: 5px;
