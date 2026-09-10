@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plate-manager"
+version = "1.0.0"
+description = "Cell culture plate management for the lab: virtual plates, per-well records, photo timelines and due-date reminders."
+requires-python = ">=3.10"
+dependencies = [
+    "PySide6>=6.8",
+    "platformdirs>=4.0",
+    "Pillow>=10.0",
+]
+
+[project.scripts]
+plate-manager = "plate_manager.__main__:main"
+
+[tool.setuptools]
+packages = ["plate_manager", "plate_manager.ui"]
