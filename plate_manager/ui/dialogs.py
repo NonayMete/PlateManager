@@ -324,6 +324,9 @@ class SearchDialog(QDialog):
                     item.setData(Qt.UserRole, (well["plate_id"], well["id"]))
                 self.table.setItem(index, column, item)
         self.table.resizeColumnsToContents()
+        if rows:
+            # so Go to well (and Enter) act on the top match without a click
+            self.table.selectRow(0)
         query = self.query.text().strip()
         self.count.setText(f"{len(rows)} matching well{'s' if len(rows) != 1 else ''}"
                            if query else "Type to search.")

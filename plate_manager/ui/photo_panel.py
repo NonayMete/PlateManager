@@ -283,7 +283,9 @@ class PhotoViewer(QDialog):
         self.rows = rows
         self.index = max(0, min(index, len(rows) - 1))
         self.setWindowTitle(f"Photos — well {well}")
-        self.resize(880, 700)
+        self._loading = True          # resizing while building must not repaint
+        self._pixmap = QPixmap()
+        self._pixmap_for: int | None = None
 
         layout = QVBoxLayout(self)
         self.image = QLabel(self)
@@ -320,25 +322,38 @@ class PhotoViewer(QDialog):
         close.rejected.connect(self.accept)
         layout.addWidget(close)
         self._loading = False
+        self.resize(880, 700)
         self.load()
 
     def current(self) -> dict:
         return self.rows[self.index]
 
+    def _render_image(self) -> None:
+        """Draw the current photo scaled to the space available.
+
+        The file is read once per photo and rescaled from that copy, so
+        resizing the window does not re-decode it.
+        """
+        row = self.current()
+        path = photos.absolute(row["rel_path"])
+        if not path.exists():
+            self.image.setPixmap(QPixmap())
+            self.image.setText(f"Missing file:\n{row['rel_path']}")
+            return
+        if self._pixmap_for != row["id"]:
+            self._pixmap = QPixmap(str(path))
+            self._pixmap_for = row["id"]
+        if self._pixmap.isNull():
+            self.image.setPixmap(QPixmap())
+            self.image.setText("This file is not a readable image.")
+            return
+        self.image.setPixmap(self._pixmap.scaled(
+            self.image.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
     def load(self) -> None:
         self._loading = True
         row = self.current()
-        path = photos.absolute(row["rel_path"])
-        if path.exists():
-            pixmap = QPixmap(str(path))
-            if not pixmap.isNull():
-                self.image.setPixmap(pixmap.scaled(
-                    self.image.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
-            else:
-                self.image.setText("This file is not a readable image.")
-        else:
-            self.image.setPixmap(QPixmap())
-            self.image.setText(f"Missing file:\n{row['rel_path']}")
+        self._render_image()
         self.date.set_value(row["taken_at"])
         self.caption.setText(row["caption"] or "")
         dated = parse_date(row["taken_at"])
@@ -380,7 +395,8 @@ class PhotoViewer(QDialog):
 
     def resizeEvent(self, event) -> None:  # noqa: N802
         super().resizeEvent(event)
-        self._render_image()
+        if not self._loading:
+            self._render_image()
 
     def keyPressEvent(self, event) -> None:  # noqa: N802
         if event.key() in (Qt.Key_Left, Qt.Key_Up):
