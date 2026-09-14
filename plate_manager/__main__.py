@@ -5,13 +5,11 @@ import argparse
 import sys
 import traceback
 
-from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QApplication, QMessageBox
+from . import APP_NAME, APP_ORG, APP_VERSION
+from ._deps import require_dependencies
 
-from . import APP_NAME, APP_ORG, APP_VERSION, db, paths
-from .repo import Store
-from .ui import theme
-from .ui.main_window import MainWindow
+# Qt, platformdirs and Pillow are imported inside main(), after the check below,
+# so a machine without them gets an explanation rather than an import traceback.
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -24,7 +22,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def _install_error_dialog() -> None:
+def _install_error_dialog(QMessageBox) -> None:
     """Show unexpected errors instead of vanishing - lab machines rarely have a console."""
     def hook(kind, value, tb) -> None:
         traceback.print_exception(kind, value, tb)
@@ -36,6 +34,16 @@ def _install_error_dialog() -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    require_dependencies()
+
+    from PySide6.QtCore import QTimer
+    from PySide6.QtWidgets import QApplication, QMessageBox
+
+    from . import db, paths
+    from .repo import Store
+    from .ui import theme
+    from .ui.main_window import MainWindow
+
     if args.data_dir:
         import os
         os.environ[paths.ENV_VAR] = args.data_dir
@@ -47,7 +55,7 @@ def main(argv: list[str] | None = None) -> int:
     app.setApplicationVersion(APP_VERSION)
     theme.apply_to(app)                          # same look on Windows and macOS
     app.setQuitOnLastWindowClosed(True)
-    _install_error_dialog()
+    _install_error_dialog(QMessageBox)
 
     paths.ensure_dirs()
     try:

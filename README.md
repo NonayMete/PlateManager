@@ -65,18 +65,25 @@ Runs on **Windows and macOS** (and Linux) from the same code — Python + Qt
 
 Requires Python 3.10 or newer.
 
+On macOS and Linux use `python3` (on macOS, plain `python` is often missing or an
+old system build); on Windows use `py`.
+
 ```bash
-git clone <this repo> && cd PlateManager
-python -m venv .venv
+git clone https://github.com/NonayMete/PlateManager.git && cd PlateManager
+python3 -m venv .venv
 ```
 
-Activate the environment — Windows: `.venv\Scripts\activate`, macOS/Linux:
-`source .venv/bin/activate` — then:
+Activate the environment — macOS/Linux: `source .venv/bin/activate`, Windows:
+`.venv\Scripts\activate` — then:
 
 ```bash
 pip install -r requirements.txt
 python run.py
 ```
+
+The install is per-environment, so do this once on each computer. Run the app
+with the same Python you installed into: inside the activated `.venv`, plain
+`python run.py` is that Python.
 
 To see it with sample data in it first:
 
@@ -106,6 +113,38 @@ python build_app.py
 
 The result lands in `dist/` — `Plate Manager.exe` on Windows, `Plate Manager.app`
 on macOS. Data is *not* stored inside the app, so upgrading is just replacing it.
+
+## If it will not start
+
+**`ModuleNotFoundError: No module named 'PySide6'`** — the packages are not
+installed for the Python that ran the app. Either the `pip install` step has not
+been done on this computer, or the app is being run with a different Python than
+the one installed into (a double-clicked file, an IDE's interpreter, or a shell
+where the `.venv` is not activated). Activate the environment and install:
+
+```bash
+cd PlateManager
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python run.py
+```
+
+Running `python run.py` now prints these instructions itself instead of a
+traceback, including the exact interpreter it was started with.
+
+**`error: externally-managed-environment`** (macOS with Homebrew Python, or
+recent Linux) — pip is refusing to install into the system Python. Create and
+activate the `.venv` above and install there; never use `--break-system-packages`
+for this.
+
+**Python too old** — 3.10 or newer is needed. Check with `python3 -V`. macOS
+ships an old build; install a current one from [python.org](https://www.python.org/downloads/)
+or with `brew install python`.
+
+**macOS says the built app "cannot be opened because the developer cannot be
+verified"** — the `.app` from `build_app.py` is unsigned. Right-click it and
+choose *Open*, then *Open* again; macOS remembers the choice.
 
 ## Where the data lives
 
