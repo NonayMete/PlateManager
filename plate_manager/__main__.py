@@ -11,11 +11,11 @@ import sys
 import traceback
 
 if __package__ in (None, ""):            # started as a file, not as a module
+    import importlib
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    import plate_manager                 # noqa: F401  (gives the imports below a parent)
-
+    importlib.import_module("plate_manager")   # the parent the imports below need
     __package__ = "plate_manager"
 
 from . import APP_NAME, APP_ORG, APP_VERSION
