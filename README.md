@@ -111,8 +111,14 @@ pip install pyinstaller
 python build_app.py
 ```
 
-The result lands in `dist/` — `Plate Manager.exe` on Windows, `Plate Manager.app`
-on macOS. Data is *not* stored inside the app, so upgrading is just replacing it.
+The result lands in `dist/` — `Plate Manager.app` on macOS, and a
+`Plate Manager` folder holding `Plate Manager.exe` on Windows (copy the whole
+folder to another machine, not just the .exe). Roughly 130 MB, because Qt comes
+with it. Data is *not* kept inside the app, so upgrading is just replacing what
+is in `dist/`.
+
+The macOS build is unsigned: the first time, right-click the `.app` and choose
+*Open*, then *Open* again.
 
 ## If it will not start
 

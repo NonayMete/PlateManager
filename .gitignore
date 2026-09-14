@@ -10,8 +10,8 @@ venv/
 .mypy_cache/
 .ruff_cache/
 
-# Packaging output
-*.spec.bak
+# Packaging output (PyInstaller writes the .spec, build/ and dist/)
+*.spec
 release/
 
 # OS

@@ -1,9 +1,22 @@
-"""Entry point: python -m plate_manager  (or the `plate-manager` command)."""
+"""Entry point: python -m plate_manager  (or the `plate-manager` command).
+
+Also survives being run as a plain file - `python plate_manager/__main__.py` -
+which Python would otherwise reject, because relative imports need a package to
+resolve against and a script has none.
+"""
 from __future__ import annotations
 
 import argparse
 import sys
 import traceback
+
+if __package__ in (None, ""):            # started as a file, not as a module
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    import plate_manager                 # noqa: F401  (gives the imports below a parent)
+
+    __package__ = "plate_manager"
 
 from . import APP_NAME, APP_ORG, APP_VERSION
 from ._deps import require_dependencies
